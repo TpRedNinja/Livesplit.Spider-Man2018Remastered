@@ -89,13 +89,12 @@ state("Spider-Man", "Steam v3.618")
 {
     bool loading    : 0x7B8995C;                    
     uint objective  : 0x6EFC918;
-    int totalxp     : 0x5DB609C;
 }
 
 init
 {
     vars.loading = false;
-    vars.MissionNumbers = new List<uint>
+    vars.UniqueNumbers = new uint[]
     {
     1230831290, 911656026, 316826671, 404089728, 436592259, 1229283555, 13877668, 3594905414u, 
     3472337876u, 2697528745u, 2157044585u, 2036655449u, 2819266385u, 721949320, 3232178045u, 3974304245u, 
@@ -103,6 +102,9 @@ init
     2641677965u, 139569742, 1654122386, 316826671, 647221538, 2963508943u, 1243652699, 316826671, 
     2080745987, 858338621, 95081780, 316826671, 637965749, 1425281762, 1930171772
     };
+
+    vars.MissionsNumbers = new List<uint>();
+
 
     switch (modules.First().ModuleMemorySize) 
     {
@@ -172,6 +174,8 @@ onStart
 {
     // This makes sure the timer always starts at 0.00
     timer.IsGameTimePaused = true;
+   // Add the numbers to the list
+   vars.MissionNumbers.AddRange(vars.UniqueNumbers);
 }
 
 update
@@ -184,7 +188,7 @@ print(current.loading.ToString());
 
 start
 {
-	return (old.objective == 0 && current.objective == 648768089 && version != "EGS v1.812"); //added does not equal to egs to make sure load remover doesnt break possibly can be removed if it doesnt matter
+	return (old.objective == 0 && current.objective == 648768089);
 }
 
 
@@ -193,7 +197,7 @@ split
     //will split for all missions but going from 2nd to last mission to last mission sense the value needs to be replaced,
 	if(vars.MissionsNumbers.Contains(current.objective) && version != "EGS v1.812") //Checks if Missions contains the current obejctive if so it splits
 	{
-		vars.MissionsNumbers.Remove(current.objective); //Removes the current objective from the list
+		vars.MissionsNumbers.RemoveAt(0); //Removes the current objective from the list
 		return true;
 	}
 }
