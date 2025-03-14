@@ -175,7 +175,7 @@ onStart
     // This makes sure the timer always starts at 0.00
     timer.IsGameTimePaused = true;
    // Add the numbers to the list
-   vars.MissionNumbers.AddRange(vars.UniqueNumbers);
+   vars.MissionsNumbers.AddRange(vars.UniqueNumbers);
 }
 
 update
@@ -195,7 +195,7 @@ start
 split 
 { 	
     //will split for all missions but going from 2nd to last mission to last mission sense the value needs to be replaced,
-	if(vars.MissionsNumbers.Contains(current.objective) && version != "EGS v1.812") //Checks if Missions contains the current obejctive if so it splits
+	if(vars.MissionsNumbers.Contains(current.objective) && version != "EGS v1.812" && current.obejctive != old.objective) //Checks if Missions contains the current obejctive if so it splits
 	{
 		vars.MissionsNumbers.RemoveAt(0); //Removes the current objective from the list
 		return true;
@@ -256,7 +256,7 @@ return
 
 onReset
 {
-	vars.MissionNumbers.Clear();
+	vars.MissionsNumbers.Clear();
 }
 
 isLoading
