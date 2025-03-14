@@ -85,9 +85,24 @@ state("Spider-Man", "Steam v2.1012")
     uint objective : 0x6EEA798;
 } 
 
+state("Spider-Man", "Steam v3.618")
+{
+    bool loading    : 0x7B8995C;                    
+    uint objective  : 0x6EFC918;
+    int totalxp     : 0x5DB609C;
+}
+
 init
 {
     vars.loading = false;
+    vars.MissionNumbers = new List<uint>
+    {
+    1230831290, 911656026, 316826671, 404089728, 436592259, 1229283555, 13877668, 3594905414u, 
+    3472337876u, 2697528745u, 2157044585u, 2036655449u, 2819266385u, 721949320, 3232178045u, 3974304245u, 
+    508893510, 1898405954, 1344066272, 2346266155u, 316826671, 3332005264u, 1946090111, 3917257570u, 
+    2641677965u, 139569742, 1654122386, 316826671, 647221538, 2963508943u, 1243652699, 316826671, 
+    2080745987, 858338621, 95081780, 316826671, 637965749, 1425281762, 1930171772
+    };
 
     switch (modules.First().ModuleMemorySize) 
     {
@@ -124,6 +139,9 @@ init
         case 140443648 : 
             version = "Steam v2.1012";
             break;
+	case 140525568 :
+		version = "Steam v3.618";
+		break;
     default:
         print("Unknown version detected");
         return false;
@@ -166,12 +184,21 @@ print(current.loading.ToString());
 
 start
 {
-	return (old.objective == 0 && current.objective == 648768089);
+	return (old.objective == 0 && current.objective == 648768089 && version != "EGS v1.812"); //added does not equal to egs to make sure load remover doesnt break possibly can be removed if it doesnt matter
 }
 
-/* commenting out until i have the motivation to come back and polish this mess
+
 split 
-{ 	return
+{ 	
+    //will split for all missions but going from 2nd to last mission to last mission sense the value needs to be replaced,
+	if(vars.MissionsNumbers.Contains(current.objective) && version != "EGS v1.812") //Checks if Missions contains the current obejctive if so it splits
+	{
+		vars.MissionsNumbers.Remove(current.objective); //Removes the current objective from the list
+		return true;
+	}
+}
+/* commenting out until i have the motivation to come back and polish this mess
+return
     (current.objective == 1230831290) && (old.objective != 1230831290) || // Moves from Clearing The Way - The Main Event 
 	(current.objective == 911656026)  && (old.objective != 911656026)  || // Moves from The Main Event - My OTHER Other Job 
     (current.objective == 316826671)  && (old.objective != 316826671)  || // Moves from My OTHER Other Job - Keeping the Peace 
@@ -211,10 +238,8 @@ split
     (current.objective == 637965749)  && (old.objective != 637965749)  || // Moves from Supply Run - Heavy Hitter
     (current.objective == 1425281762) && (old.objective != 1425281762) || // Moves from Heavy Hitter - Step Into My Parlor
     (current.objective == 1930171772) && (old.objective != 1930171772) || // Moves from Step Into My Parlor - The Heart of The Matter
-    (current.objective == 3166672678) && (old.objective != 3166672678); // Moves from The Heart of The Matter - Pax in Bello (REPLACE)
+(current.objective == 3166672678) && (old.objective != 3166672678); // Moves from The Heart of The Matter - Pax in Bello (REPLACE)
     //(current.docSmack  == 167) && (old.docSmack  == 166) && (current.objective == 3934225188); // splits when doc gets a big ol smack
-}
-
 //bad values, dont use
 //1279309092
 //3064705042
@@ -224,6 +249,11 @@ split
 
 //3145605413 is kinda ehhhh cause its basically the "leave the lab" obj. Keeping for now cause it might work... but might not.
 */
+
+onReset
+{
+	vars.MissionNumbers.Clear();
+}
 
 isLoading
 {
